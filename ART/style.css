@@ -1,0 +1,89 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.game-shell {
+  width: 1200px;
+  margin: 20px auto;
+}
+
+h1 {
+  margin: 0 0 12px;
+  text-align: center;
+}
+
+.hud {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  padding: 10px;
+  background: #ffffff;
+  border: 2px solid #d1d5db;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+button {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-weight: bold;
+  cursor: pointer;
+  background: #374151;
+  color: white;
+}
+
+button:hover {
+  background: #111827;
+}
+
+button.active {
+  background: #d97706;
+}
+
+#callGpmButton {
+  background: #dc2626;
+}
+
+#callGpmButton:hover {
+  background: #991b1b;
+}
+
+#requestIbtButton {
+  background: #0ea5e9;
+}
+
+#requestIbtButton:hover {
+  background: #0284c7;
+}
+
+#requestPrimaryTrailerButton,
+#requestSecondaryTrailerButton {
+  background: #2563eb;
+}
+
+#requestPrimaryTrailerButton:hover,
+#requestSecondaryTrailerButton:hover {
+  background: #1d4ed8;
+}
+
+canvas {
+  display: block;
+  background: #ffffff;
+  border: 3px solid #111827;
+  border-radius: 10px;
+}
