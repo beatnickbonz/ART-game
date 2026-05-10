@@ -170,7 +170,7 @@ const emptyPalletTrailer = {
   y: 5,
   width: 150,
   height: 70,
-  stacksAvailable: 5,
+  stacksAvailable: 10,
   stackSize: 14,
   label: "Empty Pallet Trailer"
 };
@@ -1524,9 +1524,12 @@ canvas.addEventListener("click", event => {
   if (gameOver) return;
 
   const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+
   const mouse = {
-    x: event.clientX - rect.left,
-    y: event.clientY - rect.top
+  x: (event.clientX - rect.left) * scaleX,
+  y: (event.clientY - rect.top) * scaleY
   };
 
   const clickedPallet = findClickedPallet(mouse);
@@ -1655,8 +1658,8 @@ toggleSecondaryDoorButton.addEventListener("click", () => toggleDoorSource("righ
 // START GAME
 // -----------------------------
 
-setInterval(() => spawnBox("left"), 900);
-setInterval(() => spawnBox("right"), 2200);
+setInterval(() => spawnBox("left"), 700);
+setInterval(() => spawnBox("right"), 1800);
 setInterval(autoClearStagedPallets, AUTO_GPM_CHECK_MS);
 
 function gameLoop() {

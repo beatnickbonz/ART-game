@@ -6,8 +6,20 @@ body {
 }
 
 .game-shell {
-  width: 1200px;
+  width: min(1200px, 100vw);
   margin: 20px auto;
+  padding: 0 8px;
+  box-sizing: border-box;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #ffffff;
+  border: 3px solid #111827;
+  border-radius: 10px;
+  box-sizing: border-box;
 }
 
 h1 {
