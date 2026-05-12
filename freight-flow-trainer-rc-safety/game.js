@@ -28,11 +28,11 @@ const COLORS = {
 };
 
 const FREIGHT = {
-  brown: { name: "Brown", color: "#b8793a", weight: 40 },
-  red: { name: "Red", color: "#ef4444", weight: 20 },
-  orange: { name: "Orange", color: "#f97316", weight: 15 },
-  purple: { name: "Purple", color: "#7c3aed", weight: 15 },
-  blue: { name: "Blue", color: "#0ea5e9", weight: 10 },
+  brown: { name: "Brown", color: "#a16207", accent: "#facc15", weight: 40 },
+  red: { name: "Red", color: "#dc2626", accent: "#fecaca", weight: 20 },
+  orange: { name: "Orange", color: "#f97316", accent: "#fed7aa", weight: 15 },
+  purple: { name: "Purple", color: "#8b5cf6", accent: "#ddd6fe", weight: 15 },
+  blue: { name: "Blue", color: "#0284c7", accent: "#bae6fd", weight: 10 },
 };
 
 const CONFIG = {
@@ -42,8 +42,7 @@ const CONFIG = {
   secondarySpawnMs: 2200,
   trailerRefillMs: 45000,
   raaPalletBoxes: 3,
-  stackPull: 14,
-  stackSplit: 7,
+  stackLimit: 7,
   stagingColumns: 4,
   stagingRows: 3,
   stagingSlotCapacity: 3,
@@ -74,18 +73,18 @@ const CONFIG = {
 const LAYOUT = {
   hud: { x: 18, y: 16, w: 1164, h: 112 },
   floor: { x: 44, y: 150, w: 1112, h: 704 },
-  primaryLane: { x: 76, y: 260, w: 438, h: 456 },
-  secondaryLane: { x: 686, y: 260, w: 438, h: 456 },
-  staging: { x: 406, y: 286, w: 388, h: 240 },
-  drive: { x: 258, y: 548, w: 684, h: 126 },
-  conveyorPrimary: { x1: 196, y1: 236, x2: 292, y2: 236, x3: 292, y3: 706 },
-  conveyorSecondary: { x1: 1004, y1: 236, x2: 908, y2: 236, x3: 908, y3: 706 },
-  emptyTrailer: { x: 520, y: 162, w: 164, h: 74 },
-  ibt: { x: 705, y: 162, w: 150, h: 74 },
-  primaryArt: { x: 82, y: 162, w: 162, h: 74 },
-  secondaryArt: { x: 956, y: 162, w: 162, h: 74 },
-  primaryRaa: { x: 262, y: 162, w: 132, h: 74 },
-  secondaryRaa: { x: 806, y: 162, w: 132, h: 74 },
+  primaryLane: { x: 66, y: 260, w: 238, h: 492 },
+  secondaryLane: { x: 896, y: 260, w: 238, h: 492 },
+  staging: { x: 406, y: 642, w: 388, h: 186 },
+  drive: { x: 326, y: 274, w: 548, h: 342 },
+  conveyorPrimary: { x1: 150, y1: 236, x2: 300, y2: 236, x3: 300, y3: 720 },
+  conveyorSecondary: { x1: 1050, y1: 236, x2: 900, y2: 236, x3: 900, y3: 720 },
+  emptyTrailer: { x: 420, y: 162, w: 154, h: 74 },
+  ibt: { x: 628, y: 162, w: 150, h: 74 },
+  primaryArt: { x: 72, y: 162, w: 150, h: 74 },
+  secondaryArt: { x: 982, y: 162, w: 150, h: 74 },
+  primaryRaa: { x: 240, y: 162, w: 132, h: 74 },
+  secondaryRaa: { x: 832, y: 162, w: 132, h: 74 },
 };
 
 // ---------------------------------------------------------------------------
@@ -124,11 +123,11 @@ const state = {
   },
   rc: {
     x: 600,
-    y: 612,
+    y: 448,
     targetX: 600,
-    targetY: 612,
+    targetY: 448,
     lastX: 600,
-    lastY: 612,
+    lastY: 448,
     active: false,
     penaltyTimer: 0,
     speed: 0,
@@ -172,10 +171,9 @@ function init() {
 }
 
 function buildBases() {
-  const primaryXs = [88, 174, 260, 346, 432];
-  const secondaryXs = [682, 768, 854, 940, 1026];
-  primaryXs.forEach((x, i) => state.sides.primary.bases.push(makeBase("primary", i, x, 710)));
-  secondaryXs.forEach((x, i) => state.sides.secondary.bases.push(makeBase("secondary", i, x, 710)));
+  const ys = [286, 374, 462, 550, 638];
+  ys.forEach((y, i) => state.sides.primary.bases.push(makeBase("primary", i, 222, y)));
+  ys.forEach((y, i) => state.sides.secondary.bases.push(makeBase("secondary", i, 908, y)));
 }
 
 function makeBase(side, index, x, y) {
@@ -198,10 +196,8 @@ function makeBase(side, index, x, y) {
 
 function buildStacks() {
   state.emptyStacks = [
-    { id: "pTop", side: "primary", label: "P Top", x: 96, y: 574, w: 74, h: 70, count: 0 },
-    { id: "pBot", side: "primary", label: "P Bottom", x: 182, y: 574, w: 74, h: 70, count: 0 },
-    { id: "sTop", side: "secondary", label: "S Top", x: 944, y: 574, w: 74, h: 70, count: 0 },
-    { id: "sBot", side: "secondary", label: "S Bottom", x: 1030, y: 574, w: 74, h: 70, count: 0 },
+    { id: "pStack", side: "primary", label: "Primary Stack", x: 90, y: 336, w: 110, h: 78, count: 0 },
+    { id: "sStack", side: "secondary", label: "Secondary Stack", x: 1000, y: 336, w: 110, h: 78, count: 0 },
   ];
 }
 
@@ -601,38 +597,39 @@ function updateIbt(dt) {
 // Empty pallet systems
 // ---------------------------------------------------------------------------
 function startSplit() {
-  if (state.splitMode) {
-    setStatus("Choose two empty pallet stack slots that are currently at 0.");
-    return;
+  let refilled = 0;
+  for (const stack of state.emptyStacks) {
+    if (stack.count === 0) {
+      stack.count = CONFIG.stackLimit;
+      refilled += 1;
+      addSpark(stack.x + stack.w / 2, stack.y + stack.h / 2, COLORS.pallet);
+    }
   }
-  state.splitMode = true;
-  state.splitTargets = [];
+  state.splitMode = false;
   state.selectedPallet = null;
   state.selectedStack = null;
-  setStatus("Pulled a 14-stack. Select two empty stack slots to split 7 and 7.");
+  setStatus(refilled ? "Empty pallet trailer refilled empty side stacks to 7." : "Both side stacks still have pallets.");
 }
 
 function clickStack(stack) {
   if (state.splitMode) {
     if (stack.count !== 0) {
-      setStatus("Split targets must be stack slots at 0.");
+      setStatus("That stack still has pallets. Refill side stacks only when they reach 0.");
       return;
     }
-    if (state.splitTargets.includes(stack)) return;
-    state.splitTargets.push(stack);
-    if (state.splitTargets.length === 2) {
-      for (const target of state.splitTargets) target.count = CONFIG.stackSplit;
-      state.splitMode = false;
-      state.splitTargets = [];
-      setStatus("Empty pallet stack split complete. Select a stack, then a matching-side base.");
-      addSpark(stack.x + stack.w / 2, stack.y + stack.h / 2, COLORS.pallet);
-    } else {
-      setStatus("Select one more empty stack slot for the second 7-stack.");
-    }
+    stack.count = CONFIG.stackLimit;
+    state.splitMode = false;
+    state.splitTargets = [];
+    setStatus(`${stack.label} refilled to 7 empty pallets.`);
+    addSpark(stack.x + stack.w / 2, stack.y + stack.h / 2, COLORS.pallet);
     return;
   }
   if (stack.count <= 0) {
-    setStatus("That stack is empty. Pull a new 14-stack from the Empty Pallet Trailer.");
+    stack.count = CONFIG.stackLimit;
+    state.selectedStack = stack;
+    state.selectedPallet = null;
+    setStatus(`${stack.label} refilled to 7 and selected. Click a matching empty base.`);
+    addSpark(stack.x + stack.w / 2, stack.y + stack.h / 2, COLORS.pallet);
     return;
   }
   state.selectedStack = stack;
@@ -945,10 +942,10 @@ function drawTrailers() {
   drawEmptyTrailer();
   drawIbtTrailer();
 
-  drawButton(68, 118, 176, 28, "Request Primary Trailer", () => requestTrailer("primary"), "dark");
-  drawButton(956, 118, 178, 28, "Request Secondary Trailer", () => requestTrailer("secondary"), "dark");
-  drawButton(260, 118, 140, 28, "Toggle Primary", () => toggleDoor("primary"), "dark");
-  drawButton(798, 118, 148, 28, "Toggle Secondary", () => toggleDoor("secondary"), "dark");
+  drawButton(54, 118, 176, 28, "Request Primary Trailer", () => requestTrailer("primary"), "dark");
+  drawButton(974, 118, 178, 28, "Request Secondary Trailer", () => requestTrailer("secondary"), "dark");
+  drawButton(236, 118, 140, 28, "Toggle Primary", () => toggleDoor("primary"), "dark");
+  drawButton(824, 118, 148, 28, "Toggle Secondary", () => toggleDoor("secondary"), "dark");
 }
 
 function drawTrailer(r, label, count, active) {
@@ -974,7 +971,7 @@ function drawEmptyTrailer() {
   drawDockLines(r);
   drawText("EMPTY PALLETS", r.x + 14, r.y + 24, 13, "#ffedd5", "bold");
   drawMiniPallet(r.x + 20, r.y + 39, 44, 24);
-  drawText("14-stack pull", r.x + 76, r.y + 57, 13, "#fed7aa", "bold");
+  drawText("unlimited", r.x + 76, r.y + 57, 13, "#fed7aa", "bold");
 }
 
 function drawIbtTrailer() {
@@ -1010,8 +1007,9 @@ function drawDriveLane() {
     roundedRect(x, r.y + r.h / 2 - 3, 24, 6, 3, "#bfdbfe");
   }
   ctx.restore();
-  drawText("RC SAFE DRIVE LANE", r.x + 22, r.y + 28, 15, "#dbeafe", "bold");
-  drawText("Carry pallets through this center zone. Unsafe driving costs points.", r.x + 172, r.y + 105, 13, "#bfdbfe", "bold");
+  drawText("RC SAFE DRIVE SQUARE", r.x + r.w / 2, r.y + 28, 14, "#dbeafe", "bold", "center");
+  drawText("Carry through center", r.x + r.w / 2, r.y + r.h - 46, 12, "#bfdbfe", "bold", "center");
+  drawText("unsafe driving costs points", r.x + r.w / 2, r.y + r.h - 27, 12, "#bfdbfe", "bold", "center");
 }
 
 function drawConveyor(path, flow, label) {
@@ -1078,11 +1076,11 @@ function drawStaging() {
 
 function drawStacks() {
   for (const stack of state.emptyStacks) {
-    const selected = state.selectedStack === stack || state.splitTargets.includes(stack);
+    const selected = state.selectedStack === stack || (state.splitMode && stack.count === 0);
     roundedRect(stack.x, stack.y, stack.w, stack.h, 10, selected ? "#4a341d" : "#2a221a", selected ? "#fbbf24" : "rgba(251,191,36,0.35)");
-    drawText(stack.label, stack.x + 9, stack.y + 18, 11, "#fed7aa", "bold");
-    drawMiniPallet(stack.x + 16, stack.y + 27, 42, 24);
-    drawText(String(stack.count), stack.x + 28, stack.y + 63, 22, "#fff7ed", "bold");
+    drawText(stack.label, stack.x + 10, stack.y + 18, 11, "#fed7aa", "bold");
+    drawMiniPallet(stack.x + 16, stack.y + 31, 50, 25);
+    drawText(`${stack.count}/7`, stack.x + 72, stack.y + 55, 22, "#fff7ed", "bold");
   }
 }
 
@@ -1126,12 +1124,12 @@ function drawBase(base) {
 }
 
 function drawWorkers() {
-  drawWorker(132, 672, "#38bdf8");
-  drawWorker(272, 672, "#f59e0b");
-  drawWorker(928, 672, "#a78bfa");
-  drawWorker(1062, 672, "#22c55e");
-  drawPalletJack(344, 690, "primary");
-  drawPalletJack(856, 690, "secondary");
+  drawWorker(118, 482, "#38bdf8");
+  drawWorker(164, 482, "#f59e0b");
+  drawWorker(1036, 482, "#a78bfa");
+  drawWorker(1082, 482, "#22c55e");
+  drawPalletJack(326, 608, "primary");
+  drawPalletJack(874, 608, "secondary");
 }
 
 function drawRcOperator() {
@@ -1215,12 +1213,12 @@ function drawEffects() {
 
 function drawSelection() {
   if (state.splitMode) {
-    roundedRect(402, 816, 396, 42, 12, "rgba(251, 191, 36, 0.13)", "#facc15");
-    drawText(`Split mode: ${state.splitTargets.length}/2 empty stack slots selected`, 422, 842, 15, "#fde68a", "bold");
+    roundedRect(402, 842, 396, 36, 12, "rgba(251, 191, 36, 0.13)", "#facc15");
+    drawText("Trailer ready: click one empty side stack to refill to 7", 422, 866, 15, "#fde68a", "bold");
   }
   if (state.selectedPallet) {
     const base = state.selectedPallet.base;
-    drawText(`Selected: ${FREIGHT[base.color].name} pallet`, 444, 842, 16, "#fef08a", "bold");
+    drawText(`Selected: ${FREIGHT[base.color].name} pallet`, 444, 866, 16, "#fef08a", "bold");
   }
 }
 
@@ -1261,11 +1259,23 @@ function drawMiniPallet(x, y, w, h) {
 }
 
 function drawBox(x, y, w, h, color) {
-  roundedRect(x, y, w, h, 3, color, "rgba(255,255,255,0.32)");
+  const freight = Object.entries(FREIGHT).find(([, data]) => data.color === color);
+  const accent = freight ? freight[1].accent : "rgba(255,255,255,0.32)";
+  roundedRect(x, y, w, h, 3, color, accent);
   ctx.save();
-  ctx.globalAlpha = 0.35;
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(x + 2, y + 2, w - 4, 2);
+  ctx.globalAlpha = 0.72;
+  ctx.fillStyle = accent;
+  ctx.fillRect(x + 2, y + 2, w - 4, Math.max(2, h * 0.16));
+  if (freight && w >= 16 && h >= 12) {
+    const key = freight[0];
+    const mark = key === "blue" ? "BL" : key === "brown" ? "BR" : key[0].toUpperCase();
+    ctx.globalAlpha = 0.92;
+    ctx.fillStyle = "#ffffff";
+    ctx.font = `bold ${Math.max(7, Math.min(10, w * 0.42))}px Inter, ui-sans-serif, system-ui, sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(mark, x + w / 2, y + h * 0.62);
+  }
   ctx.restore();
 }
 
