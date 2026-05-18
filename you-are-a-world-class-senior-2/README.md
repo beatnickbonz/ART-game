@@ -17,12 +17,17 @@ Then open `http://localhost:8080`.
 ## Controls
 
 - Click `Toggle Primary` or `Toggle Secondary` to swap that side between ART and RAA feed.
-- Click an RAA dock while that side is on RAA to stage a 3-box backup pallet.
+- Click an RAA dock while ART is active to prep a backup pallet. Each side can hold 5 prepped RAA pallets.
+- When ART empties, switch to RAA. A prepped RAA pallet loads instantly for a smooth transition bonus.
+- Click an RAA dock while that side is already on RAA to load a prepared pallet or emergency-stage a 3-box backup pallet.
 - Click a full non-blue base to select that pallet, then click a staging lane to place it.
-- Click an empty staging lane to cycle its reservation: Brown, Red, Orange, Purple, then Open.
-- Keep like freight together. A staging lane with 3 matching pallets becomes ready for GPM.
-- Click a ready staging lane to release it, or wait for auto-GPM to clear it.
-- Mixed staging lanes cannot auto-clear and will create jam penalties until manual GPM clears them.
+- Watch the center forecast console. Forecasts start near the center as future freight and move outward toward each side; the outermost chip marked `NEXT` is the next box that will drop onto that side's bases.
+- Hot forecast colors are ringed; starting and completing clean hot-color lanes earns bonuses and faster GPM pickup.
+- Empty staging lanes naturally lock to the first pallet placed in them.
+- Keep like freight together. A staging lane with 3 matching pallets becomes ready for random GPM pickup.
+- Ready lanes clear automatically when GPM arrives; the player does not click ready lanes to clear them.
+- Mixed staging lanes cannot auto-clear. Click a mixed lane to rework it into separate clean lanes if enough empty lanes are available; rework costs score but preserves the freight.
+- Mixed lanes still create light jam penalties if left unresolved too long.
 - Primary-side lanes are faster for Primary freight, Secondary-side lanes are faster for Secondary freight, and the center lane is flexible.
 - Blue pallets move to IBT instead of shared staging.
 - Click the empty pallet trailer, then click two empty stack pads to split a 14-pallet pull into 7 and 7.
@@ -30,6 +35,7 @@ Then open `http://localhost:8080`.
 - Click `Call GPM` to clear staged freight with a score penalty.
 - Click `Request IBT` when blue freight is waiting in the IBT trailer.
 - Click `New Trailer` on an empty ART dock to begin its 45-second refill.
+- Scoring is tuned to reward clean flow more than it punishes mistakes: mixed lanes, rework, manual GPM, and blocked bases cost score, but good staging, hot forecast completions, IBT clears, and smooth RAA transitions can recover momentum.
 
 ## Scaling
 
@@ -43,7 +49,11 @@ That preserves aspect ratio across laptops and monitors, centers the game, and k
 
 ## Assets And Licenses
 
-No external art, sprites, audio, or texture assets are bundled. All warehouse visuals are procedural Phaser graphics: dock doors, conveyors, pallets, workers, RC lane markings, warning lights, freight, and dashboard UI.
+Worker sprites are generated from the user-provided image `WorkerSprites.png` and processed into `assets/worker_sprites_v2.png` with transparent backgrounds and Phaser-friendly fixed frames.
+The same sprite sheet is embedded in `assets/workerSpritesData.js` so the game can still load workers when Chrome blocks or caches local image paths.
+
+All other warehouse visuals are procedural Phaser graphics: dock doors, conveyors, pallets, RC lane markings, warning lights, freight, and dashboard UI.
+The warehouse floor scene is procedurally drawn from warehouse-floor reference imagery: concrete slabs, worn yellow safety paint, rack storage, dock protection, parked equipment, pallet zones, and industrial props.
 
 Runtime dependency:
 
@@ -56,21 +66,22 @@ Most values live in `TUNE` near the top of `game.js`:
 - Trailer capacities and refill timers
 - ART spawn intervals
 - RAA pallet size
+- RAA prep capacity, prep timer, clutter timer, and transition bonuses
 - Base and staging capacities
 - Shared staging lane count and capacity
 - Freight preview queue length
 - Mixed-lane jam timing
-- Ready-lane pressure penalty
 - GPM auto-clear interval and chance
 - Blocked-base grace period and penalty cadence
-- Score values
+- Score values, including staged freight, hot forecast bonuses, rework cost, GPM cost, blocked-base penalties, and mixed-lane jam penalties
 - Freight color distribution
+- Blue remains the lowest-probability freight; non-blue colors are randomized evenly so the forecast matters.
 
 ## Future Expansion Ideas
 
 - Add route planning and operator dispatch commands.
 - Add shift goals, graded scenarios, and coaching callouts.
 - Add audio: conveyor hum, dock alarms, scanner chirps, alert tones.
-- Add real sprite sheets for workers, forklifts, and pallet jacks.
+- Add real sprite sheets for forklifts and pallet jacks.
 - Add scenario scripting for trailer surges, lane closures, IBT waves, and staffing changes.
 - Add analytics after each run: bottleneck heatmap, missed fast-flow bonuses, blocked-base duration, staging discipline, and RAA usage.
